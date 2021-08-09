@@ -11,7 +11,7 @@
 
 ==============Loon===============
 [Script]
-cron "15 0-23/1 * * *" script-path=jd_joy_feedPets.js,tag=京东宠汪汪喂食
+cron "15 0-23/3 * * *" script-path=jd_joy_feedPets.js,tag=京东宠汪汪喂食
 
 =========Surge=============
 [Script]
