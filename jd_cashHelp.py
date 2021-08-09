@@ -17,7 +17,7 @@ new Env('签到领现金-助力');
 cookies = ''
 # 设置被助力的账号可填用户名 或 pin的值不要; env 设置 export cash_zlzh="用户1&用户N"
 # cash_zlzh = ['Your JD_User', '买买买']
-cash_zlzh = ['jd_152183bwj','jd_69a5e9758c8ff','jd_4e46f6a553ef5','jd_790f598b36ab9','%E5%B0%8F%E4%B8%9Cgo', '洛伦兹力做功酶','shine境静','李政景','Ronxy_','jd_7d4d13c561fdf','无好感了','2Yavi','克子大人','jianghaihang888','李丶旧友','长大八百标兵','肯叽叽','女一号庞妈','喜欢唱歌MC的哈士奇佰','_柿子','奎星阁']
+cash_zlzh = ['jd_152183bwj','jd_69a5e9758c8ff','jd_4e46f6a553ef5','jd_790f598b36ab9','%E5%B0%8F%E4%B8%9Cgo','jd_6551cd773c6ff', '洛伦兹力做功酶','shine境静','李政景','Ronxy_','jd_7d4d13c561fdf','无好感了','2Yavi','克子大人','jianghaihang888','李丶旧友','长大八百标兵','肯叽叽','女一号庞妈','喜欢唱歌MC的哈士奇佰','_柿子','奎星阁']
 # cash_zlzh = ['jd_152183bwj']
 # Env环境设置 通知服务
 # export BARK=''                   # bark服务,苹果商店自行搜索;

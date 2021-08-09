@@ -21,7 +21,7 @@ new Env('全民抢京豆 8.6-8.16');
 # exit(0)
 #ck 优先读取【JDCookies.txt】 文件内的ck  再到 ENV的 变量 JD_COOKIE='ck1&ck2' 最后才到脚本内 cookies=ck
 cookies = ''
-qjd_zlzh =  ['jd_69a5e9758c8ff','jd_152183bwj','jd_4e46f6a553ef5','jd_790f598b36ab9','Ronxy_','%E5%B0%8F%E4%B8%9Cgo', '洛伦兹力做功酶','shine境静','李政景','jd_7d4d13c561fdf','无好感了','2Yavi','克子大人','jianghaihang888','李丶旧友','长大八百标兵','肯叽叽','女一号庞妈','喜欢唱歌MC的哈士奇佰','_柿子','奎星阁']
+qjd_zlzh =  ['jd_69a5e9758c8ff','jd_152183bwj','jd_4e46f6a553ef5','jd_790f598b36ab9','Ronxy_','%E5%B0%8F%E4%B8%9Cgo','jd_6551cd773c6ff', '洛伦兹力做功酶','shine境静','李政景','jd_7d4d13c561fdf','无好感了','2Yavi','克子大人','jianghaihang888','李丶旧友','长大八百标兵','肯叽叽','女一号庞妈','喜欢唱歌MC的哈士奇佰','_柿子','奎星阁']
 
 
 # Env环境设置 通知服务
