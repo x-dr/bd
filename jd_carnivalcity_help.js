@@ -1,3 +1,4 @@
+//https://gh.tryxd.cn/https://github.com/x-dr/bd/blob/main/old/jd_cityShareCodes.json
 /*
 京东手机狂欢城活动，每日可获得20+以上京豆（其中20京豆是往期奖励，需第一天参加活动后，第二天才能拿到）
 活动时间: 2021-8-9至2021-8-28
@@ -42,7 +43,7 @@ const JD_API_HOST = 'https://api.m.jd.com/api';
     return;
   }
   $.temp = [];
-  $.updatePkActivityIdRes = await getAuthorShareCode('https://raw.githubusercontent.com/x-dr/bd/main/old/jd_cityShareCodes.json')
+  $.updatePkActivityIdRes = await getAuthorShareCode('https://gh.tryxd.cn/https://github.com/x-dr/bd/blob/main/old/jd_cityShareCodes.json')
   if (!$.updatePkActivityIdRes) {
     $.http.get({url: 'https://gh.tryxd.cn/https://github.com/x-dr/bd/blob/main/old/jd_cityShareCodes.json'}).then((resp) => {}).catch((e) => $.log('刷新CDN异常', e));
     await $.wait(1000)
