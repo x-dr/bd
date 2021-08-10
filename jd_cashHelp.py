@@ -16,9 +16,8 @@ new Env('签到领现金-助力');
 #ck 优先读取【JDCookies.txt】 文件内的ck  再到 ENV的 变量 JD_COOKIE='ck1&ck2' 最后才到脚本内 cookies=ck
 cookies = ''
 # 设置被助力的账号可填用户名 或 pin的值不要; env 设置 export cash_zlzh="用户1&用户N"
-# cash_zlzh = ['Your JD_User', '买买买']
-cash_zlzh = ['jd_152183bwj','jd_69a5e9758c8ff','jd_4e46f6a553ef5','jd_790f598b36ab9','%E5%B0%8F%E4%B8%9Cgo','jd_6551cd773c6ff', '洛伦兹力做功酶','shine境静','李政景','Ronxy_','jd_7d4d13c561fdf','无好感了','2Yavi','克子大人','jianghaihang888','李丶旧友','长大八百标兵','肯叽叽','女一号庞妈','喜欢唱歌MC的哈士奇佰','_柿子','奎星阁']
-# cash_zlzh = ['jd_152183bwj']
+cash_zlzh =  ['jd_69a5e9758c8ff','jd_152183bwj','jd_4e46f6a553ef5','jd_790f598b36ab9','Ronxy_','%E5%B0%8F%E4%B8%9Cgo','jd_6551cd773c6ff', '洛伦兹力做功酶','shine境静','李政景','jd_7d4d13c561fdf','无好感了','2Yavi','克子大人','jianghaihang888','李丶旧友','长大八百标兵','肯叽叽','女一号庞妈','喜欢唱歌MC的哈士奇佰','_柿子','奎星阁']
+
 # Env环境设置 通知服务
 # export BARK=''                   # bark服务,苹果商店自行搜索;
 # export SCKEY=''                  # Server酱的SCKEY;
@@ -38,7 +37,7 @@ cash_zlzh = ['jd_152183bwj','jd_69a5e9758c8ff','jd_4e46f6a553ef5','jd_790f598b36
 
 # 建议调整一下的参数
 # UA 可自定义你的，注意格式: 【 jdapp;iPhone;10.0.4;14.2;9fb54498b32e17dfc5717744b5eaecda8366223c;network/wifi;ADID/2CF597D0-10D8-4DF8-C5A2-61FD79AC8035;model/iPhone11,1;addressid/7785283669;appBuild/167707;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/null;supportJDSHWK/1 】
-UserAgent = 'Mozilla/5.0 (Linux; U; Android 4.4.4; zh-cn; M351 Build/KTU84P) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30'
+UserAgent = ''
 # 限制速度 （秒）
 sleepNum = 0.1
 
@@ -145,9 +144,9 @@ class getJDCookie(object):
         except Exception as e:
             print(f"【getCookie Error】{e}")
 
-    # 检测cookie格式是否正确
+        # 检测cookie格式是否正确
     def getUserInfo(self, ck, pinName, userNum):
-        url = 'https://me-api.jd.com/user_new/info/GetJDUserInfoUnion?orgFlag=JD_PinGou_New&callSource=mainorder&channel=4&isHomewhite=0&sceneval=2&sceneval=2&callback=GetJDUserInfoUnion'
+        url = 'https://me-api.jd.com/user_new/info/GetJDUserInfoUnion?orgFlag=JD_PinGou_New&callSource=mainorder&channel=4&isHomewhite=0&sceneval=2&sceneval=2&callback='
         headers = {
             'Cookie': ck,
             'Accept': '*/*',
@@ -159,12 +158,17 @@ class getJDCookie(object):
             'Accept-Language': 'zh-cn'
         }
         try:
-            resp = requests.get(url=url, verify=False, headers=headers, timeout=60).text
-            r = re.compile(r'GetJDUserInfoUnion.*?\((.*?)\)')
-            result = r.findall(resp)
-            userInfo = json.loads(result[0])
-            nickname = userInfo['data']['userInfo']['baseInfo']['nickname']
-            return ck, nickname
+            if sys.platform == 'ios':
+                resp = requests.get(url=url, verify=False, headers=headers, timeout=60).json()
+            else:
+                resp = requests.get(url=url, headers=headers, timeout=60).json()
+            if resp['retcode'] == "0":
+                nickname = resp['data']['userInfo']['baseInfo']['nickname']
+                return ck, nickname
+            else:
+                context = f"账号{userNum}【{pinName}】Cookie 已失效！请重新获取。"
+                print(context)
+                return ck, False
         except Exception:
             context = f"账号{userNum}【{pinName}】Cookie 已失效！请重新获取。"
             print(context)
