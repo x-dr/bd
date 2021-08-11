@@ -725,7 +725,7 @@ function updateShareCodesCDN(url = 'https://gh.tryxd.cn/https://github.com/x-dr/
 function readShareCode() {
   console.log(`开始`)
   return new Promise(async resolve => {
-    $.get({url: `https://jd.smiek.tk/info_carnivalcity`, 'timeout': 20000}, (err, resp, data) => {
+    $.get({url: `https://gh.tryxd.cn/https://github.com/x-dr/bd/blob/main/old/jd_cityShareCodes.json`, 'timeout': 20000}, (err, resp, data) => {
       try {
         if (err) {
           console.log(`${JSON.stringify(err)}`)
