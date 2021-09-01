@@ -36,19 +36,19 @@ var_name=(
 )
 
 name_js=(
-  x-dr_jd_jd_fruit
-  x-dr_jd_jd_pet
-  x-dr_jd_jd_plantBean
-  x-dr_jd_jd_dreamFactory
-  x-dr_jd_jd_jdfactory
-  x-dr_jd_jd_jdzz
-  x-dr_jd_jd_crazy_joy
-  x-dr_jd_jd_jxnc
-  x-dr_jd_jd_bookshop
-  x-dr_jd_jd_cash
-  x-dr_jd_jd_sgmh
-  x-dr_jd_jd_cfd
-  x-dr_jd_jd_health
+  x-dr_bd_main_jd_fruit
+  x-dr_bd_main_jd_pet
+  x-dr_bd_main_jd_plantBean
+  x-dr_bd_main_jd_dreamFactory
+  x-dr_bd_main_jd_jdfactory
+  x-dr_bd_main_jd_jdzz
+  x-dr_bd_main_jd_crazy_joy
+  x-dr_bd_main_jd_jxnc
+  x-dr_bd_main_jd_bookshop
+  x-dr_bd_main_jd_cash
+  x-dr_bd_main_jd_sgmh
+  x-dr_bd_main_jd_cfd
+  x-dr_bd_main_jd_health
 )
 
 name_config=(
