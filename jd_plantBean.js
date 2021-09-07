@@ -34,9 +34,9 @@ const JD_API_HOST = 'https://api.m.jd.com/client.action';
 //下面给出两个账号的填写示例（iOS只支持2个京东账号）
 let shareCodes = [ // IOS本地脚本用户这个列表填入你要助力的好友的shareCode
   //账号一的好友shareCode,不同好友的shareCode中间用@符号隔开
-  'lsvcdmfjrraodhrrvhcfiz7iye@olmijoxgmjuty7323i6ijrv5tdhd32kefogty5i@gf2njfitdloxldekzam2flrji4@mq65ksgdrkobhiyvkoqfi7ff7i5ac3f4ijdgqji@wkmb7lejrmax2avk7bszvx7s74@4npkonnsy7xi3acvl3goi4ga5gpmpv2km4yj3di@rj7s6mzlk7uognpgua34bszhyf4cpqqtj5vfhta@olmijoxgmjutyif5p35uuja6gwp2ulsp2x6fjoi@dzfuhp3b2fz7mnj5ndxxqsradgg5bsrhuof2mbq',
+  'ykgaackjpfeabglv32shhzgdgu3h7wlwy7o5jii@olmijoxgmjuty7323i6ijrv5tdhd32kefogty5i@gf2njfitdloxldekzam2flrji4@mq65ksgdrkobhiyvkoqfi7ff7i5ac3f4ijdgqji@wkmb7lejrmax2avk7bszvx7s74@4npkonnsy7xi3acvl3goi4ga5gpmpv2km4yj3di@rj7s6mzlk7uognpgua34bszhyf4cpqqtj5vfhta@olmijoxgmjutyif5p35uuja6gwp2ulsp2x6fjoi@dzfuhp3b2fz7mnj5ndxxqsradgg5bsrhuof2mbq',
   //账号二的好友shareCode,不同好友的shareCode中间用@符号隔开
-  'lsvcdmfjrraodhrrvhcfiz7iye@olmijoxgmjuty7323i6ijrv5tdhd32kefogty5i@gf2njfitdloxldekzam2flrji4@mq65ksgdrkobhiyvkoqfi7ff7i5ac3f4ijdgqji@wkmb7lejrmax2avk7bszvx7s74@4npkonnsy7xi3acvl3goi4ga5gpmpv2km4yj3di@rj7s6mzlk7uognpgua34bszhyf4cpqqtj5vfhta@olmijoxgmjutyif5p35uuja6gwp2ulsp2x6fjoi@dzfuhp3b2fz7mnj5ndxxqsradgg5bsrhuof2mbq',
+  'ykgaackjpfeabglv32shhzgdgu3h7wlwy7o5jii@olmijoxgmjuty7323i6ijrv5tdhd32kefogty5i@gf2njfitdloxldekzam2flrji4@mq65ksgdrkobhiyvkoqfi7ff7i5ac3f4ijdgqji@wkmb7lejrmax2avk7bszvx7s74@4npkonnsy7xi3acvl3goi4ga5gpmpv2km4yj3di@rj7s6mzlk7uognpgua34bszhyf4cpqqtj5vfhta@olmijoxgmjutyif5p35uuja6gwp2ulsp2x6fjoi@dzfuhp3b2fz7mnj5ndxxqsradgg5bsrhuof2mbq',
 ]
 let allMessage = ``;
 let currentRoundId = null;//本期活动id
@@ -104,6 +104,26 @@ async function jdPlantBean() {
       const shareUrl = $.plantBeanIndexResult.data.jwordShareInfo.shareUrl
       $.myPlantUuid = getParam(shareUrl, 'plantUuid')
       console.log(`\n【京东账号${$.index}（${$.UserName}）的${$.name}好友互助码】${$.myPlantUuid}\n`);
+
+      // ***************************
+      // 报告运行次数
+      $.get({
+        url: `https://cdn.nz.lu/api/runTimes?activityId=bean&sharecode=${$.myPlantUuid}`,
+        headers: {
+          'Host': 'api.sharecode.ga'
+        },
+        timeout: 10000
+      }, (err, resp, data) => {
+        if (err) {
+          console.log('上报失败', err)
+        } else {
+          if (data === '1' || data === '0') {
+            console.log('上报成功')
+          }
+        }
+      })
+      // ***************************
+
       roundList = $.plantBeanIndexResult.data.roundList;
       currentRoundId = roundList[num].roundId;//本期的roundId
       lastRoundId = roundList[num - 1].roundId;//上期的roundId
@@ -541,7 +561,7 @@ async function plantBeanIndex() {
 }
 function readShareCode() {
   return new Promise(async resolve => {
-    $.get({url: `http://share.turinglabs.net/api/v3/bean/query/${randomCount}/`, timeout: 10000}, (err, resp, data) => {
+    $.get({url: `https://cdn.nz.lu/api/bean/${randomCount}`, headers:{'Host':'api.sharecode.ga'}, timeout: 10000}, (err, resp, data) => {
       try {
         if (err) {
           console.log(`${JSON.stringify(err)}`)
@@ -574,10 +594,10 @@ function shareCodesFormat() {
       const tempIndex = $.index > shareCodes.length ? (shareCodes.length - 1) : ($.index - 1);
       newShareCodes = shareCodes[tempIndex].split('@');
     }
-    // const readShareCodeRes = await readShareCode();
-    // if (readShareCodeRes && readShareCodeRes.code === 200) {
-    //   newShareCodes = [...new Set([...newShareCodes, ...(readShareCodeRes.data || [])])];
-    // }
+    const readShareCodeRes = await readShareCode();
+    if (readShareCodeRes && readShareCodeRes.code === 200) {
+      newShareCodes = [...new Set([...newShareCodes, ...(readShareCodeRes.data || [])])];
+    }
     console.log(`第${$.index}个京东账号将要助力的好友${JSON.stringify(newShareCodes)}`)
     resolve();
   })
