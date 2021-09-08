@@ -181,7 +181,7 @@ if (process.env.CKNOWARNERROR) {
         console.log(allMessage);
 
         if (ShowSuccess == "true" && SuccessMessage) {
-            allMessage += `👇👇👇👇👇有效账号👇👇👇👇👇\n` + SuccessMessage + `\n``\n``\n`+ `更新cookie地址：jd.ookk.me`+`\n`;
+            allMessage += `👇👇👇👇👇有效账号👇👇👇👇👇\n` + SuccessMessage + `\n`;
         }
 		
 		if(NoWarnError== "true"){
