@@ -35,9 +35,9 @@ if ($.isNode()) {
 }
 $.invitePinTaskList = []
 $.invitePin = [
-  "NZ42T3lD49qiTGpZsSucXRS8kD-wJ4K6FxwxUpNbb4I",
-  "zZkewfd3OKs-WtoJd8Jw6OIrD81WzO3SX56S2DGMlZ0",
-  "7zG4VHS99AUEoX1mQTkC9Q",
+  "160xKoh9be9CcuG23FLlf1EhA1uCTQulxYrUZx_Qebg",
+  "uFYnCWfOLV4uMpgoXyhcSegZy4PkWyCoooBdb_KlJXQ",
+  "nFgr2sHb93fIe59pKUr0hQ",
   "BbsjCRrQudIL06kRvqmVln053h03GiApg7HN_Vhy_Og",
   "sAxL-dc5T6lS6wtKqP6SlA",
   "bcVxt4PbZdbX7tiT1Q_ubg"
