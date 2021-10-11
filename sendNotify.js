@@ -147,7 +147,7 @@ let strCustom = "";
 let strCustomArr = [];
 let strCustomTempArr = [];
 let Notify_CKTask = "";
-async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By ccwav Mod') {
+async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：小东（容器1）\n\ncookie更新/提交地址: \n\njd.ookk.me \n\n支付宝搜索 707209116 领红包') {
 	console.log(`开始发送通知...`);
 	try {
 		//Reset 变量
@@ -212,7 +212,7 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By cc
 			return;
 		}
 
-		if (text.indexOf("cookie已失效") != -1 || desp.indexOf("重新登录获取") != -1 || text == "Ninja 运行通知") {
+		if (text.indexOf("cookie已失效") != -1 || desp.indexOf("重新登录获取") != -1 || text == "京东助手 运行通知") {
 
 			if (Notify_CKTask) {
 				console.log("触发CK脚本，开始执行....");
@@ -221,7 +221,7 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By cc
 					console.log(error, stdout, stderr)
 				});
 			}
-			if (Notify_NoCKFalse == "true" && text != "Ninja 运行通知") {
+			if (Notify_NoCKFalse == "true" && text != "京东助手 运行通知") {
 				return;
 			}
 		}
