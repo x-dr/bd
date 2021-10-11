@@ -121,7 +121,7 @@ let strCustom = "";
 let strCustomArr = [];
 let strCustomTempArr = [];
 let Notify_CKTask = "";
-async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：本通知 By：小东（容器2）\n\ncookie更新/提交地址: \n\njd.ookk.me \n\n支付宝搜索 707209116 领红包') {
+async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：小东（容器1）\n\ncookie更新/提交地址: \n\njd.ookk.me\n\n支付宝搜索 707209116 领红包') {
 	console.log(`开始发送通知...`);
 	try {
 		//Reset 变量
