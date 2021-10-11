@@ -9,7 +9,7 @@
  * @param params 某些推送通知方式点击弹窗可跳转, 例：{ url: 'https://abc.com' }
  * @param author 作者仓库等信息  例：`本通知 By：https://github.com/whyour/qinglong`
  */
-//详细说明参考 https://github.com/ccwav/QLScript2.
+//sendNotify Pro增加的变量请移步https://github.com/ccwav/QLScript 查看.
 const querystring = require('querystring');
 const exec = require('child_process').exec;
 const $ = new Env();
@@ -84,8 +84,7 @@ let IGOT_PUSH_KEY = '';
 //PUSH_PLUS_USER： 一对多推送的“群组编码”（一对多推送下面->您的群组(如无则新建)->群组编码，如果您是创建群组人。也需点击“查看二维码”扫描绑定，否则不能接受群组消息推送）
 let PUSH_PLUS_TOKEN = '';
 let PUSH_PLUS_USER = '';
-let PUSH_PLUS_TOKEN_hxtrip = '';
-let PUSH_PLUS_USER_hxtrip = '';
+
 /**
  * sendNotify 推送通知功能
  * @param text 通知头
@@ -94,12 +93,12 @@ let PUSH_PLUS_USER_hxtrip = '';
  * @param author 作者仓库等信息  例：`本通知 By：https://github.com/whyour/qinglong`
  * @returns {Promise<unknown>}
  */
-let PushErrorTime = 0;
 let strTitle = "";
 let ShowRemarkType = "1";
+let Notify_CompToGroup2 = "false";
 let Notify_NoCKFalse = "false";
 let Notify_NoLoginSuccess = "false";
-let UseGroupNotify = 1;
+let UseGroup2 = false;
 let strAuthor = "";
 const {
 	getEnvs
@@ -122,12 +121,12 @@ let strCustom = "";
 let strCustomArr = [];
 let strCustomTempArr = [];
 let Notify_CKTask = "";
-async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：小东（容器1）\n\ncookie更新/提交地址: \n\njd.ookk.me \n\n支付宝搜索 707209116 领红包') {
+async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：本通知 By：小东（容器2）\n\ncookie更新/提交地址: \n\njd.ookk.me \n\n支付宝搜索 707209116 领红包') {
 	console.log(`开始发送通知...`);
 	try {
 		//Reset 变量
-		console.log("通知标题: " + text);
-		UseGroupNotify = 1;
+
+		UseGroup2 = false;
 		strTitle = "";
 		GOBOT_URL = '';
 		GOBOT_TOKEN = '';
@@ -149,8 +148,6 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 		IGOT_PUSH_KEY = '';
 		PUSH_PLUS_TOKEN = '';
 		PUSH_PLUS_USER = '';
-		PUSH_PLUS_TOKEN_hxtrip = '';
-		PUSH_PLUS_USER_hxtrip = '';
 		Notify_CKTask = "";
 
 		//变量开关
@@ -163,16 +160,18 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 		var Use_qywxamNotify = true;
 		var Use_iGotNotify = true;
 		var Use_gobotNotify = true;
-		var Use_pushPlushxtripNotify = true;
 
+		if (process.env.NOTIFY_COMPTOGROUP2) {
+			Notify_CompToGroup2 = process.env.NOTIFY_COMPTOGROUP2;
+		}
 		if (process.env.NOTIFY_NOCKFALSE) {
 			Notify_NoCKFalse = process.env.NOTIFY_NOCKFALSE;
 		}
 		if (process.env.NOTIFY_AUTHOR) {
 			strAuthor = process.env.NOTIFY_AUTHOR;
 		}
-		if (process.env.NOTIFY_SHOWNAMETYPE) {
-			ShowRemarkType = process.env.NOTIFY_SHOWNAMETYPE;
+		if (process.env.SHOWREMARKTYPE) {
+			ShowRemarkType = process.env.SHOWREMARKTYPE;
 		}
 		if (process.env.NOTIFY_NOLOGINSUCCESS) {
 			Notify_NoLoginSuccess = process.env.NOTIFY_NOLOGINSUCCESS;
@@ -209,26 +208,25 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 			return;
 		}
 
+		//检查脚本名称是否需要通知到Group2,Group2读取原环境配置的变量名后加2的值.例如: QYWX_AM2
+
+		const notifyGroupList = process.env.NOTIFY_GROUP_LIST ? process.env.NOTIFY_GROUP_LIST.split('&') : [];
+		const titleIndex2 = notifyGroupList.findIndex((item) => item === text);
+
 		if (text.indexOf("已可领取") != -1) {
 			if (text.indexOf("农场") != -1) {
-				strTitle = "东东农场领取";
+				strTitle = "东东农场";
 			} else {
-				strTitle = "东东萌宠领取";
+				strTitle = "东东萌宠";
 			}
-		}
-		if (text.indexOf("汪汪乐园养joy") != -1) {
-			strTitle = "汪汪乐园养joy领取";
 		}
 
 		if (text == "京喜工厂") {
 			if (desp.indexOf("元造进行兑换") != -1) {
-				strTitle = "京喜工厂领取";
+				strTitle = "京喜工厂";
 			}
 		}
 
-		if (text.indexOf("任务") != -1 && (text.indexOf("新增") != -1 || text.indexOf("删除") != -1)) {
-			strTitle = "脚本任务更新";
-		}
 		if (strTitle) {
 			const notifyRemindList = process.env.NOTIFY_NOREMIND ? process.env.NOTIFY_NOREMIND.split('&') : [];
 			titleIndex = notifyRemindList.findIndex((item) => item === strTitle);
@@ -237,8 +235,18 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 				console.log(`${text} 在领取信息黑名单中，已跳过推送`);
 				return;
 			}
-		} else {
-			strTitle = text;
+		}
+		if (strTitle && Notify_CompToGroup2 == "true") {
+			console.log(`${strTitle}领取信息推送至群组2`);
+			UseGroup2 = true;
+		}
+		if (Notify_CompToGroup2 != "true" && Notify_CompToGroup2 != "false") {
+			const notifyCompToGroup2 = Notify_CompToGroup2 ? Notify_CompToGroup2.split('&') : [];
+			titleIndex = notifyCompToGroup2.findIndex((item) => item === strTitle);
+			if (titleIndex !== -1) {
+				console.log(`${strTitle}领取信息推送至群组2`);
+				UseGroup2 = true;
+			}
 		}
 
 		if (Notify_NoLoginSuccess == "true") {
@@ -248,38 +256,11 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 			}
 		}
 
-		//检查脚本名称是否需要通知到Group2,Group2读取原环境配置的变量名后加2的值.例如: QYWX_AM2
-		const notifyGroup2List = process.env.NOTIFY_GROUP2_LIST ? process.env.NOTIFY_GROUP2_LIST.split('&') : [];
-		const titleIndex2 = notifyGroup2List.findIndex((item) => item === strTitle);
-		const notifyGroup3List = process.env.NOTIFY_GROUP3_LIST ? process.env.NOTIFY_GROUP3_LIST.split('&') : [];
-		const titleIndexGp3 = notifyGroup3List.findIndex((item) => item === strTitle);
-		const notifyGroup4List = process.env.NOTIFY_GROUP4_LIST ? process.env.NOTIFY_GROUP4_LIST.split('&') : [];
-		const titleIndexGp4 = notifyGroup4List.findIndex((item) => item === strTitle);
-		const notifyGroup5List = process.env.NOTIFY_GROUP5_LIST ? process.env.NOTIFY_GROUP5_LIST.split('&') : [];
-		const titleIndexGp5 = notifyGroup5List.findIndex((item) => item === strTitle);
-		const notifyGroup6List = process.env.NOTIFY_GROUP6_LIST ? process.env.NOTIFY_GROUP6_LIST.split('&') : [];
-		const titleIndexGp6 = notifyGroup6List.findIndex((item) => item === strTitle);
-
 		if (titleIndex2 !== -1) {
-			console.log(`${strTitle} 在群组2推送名单中，初始化群组推送`);
-			UseGroupNotify = 2;
+			console.log(`${text} 在群组2推送名单中，初始化群组推送`);
+			UseGroup2 = true;
 		}
-		if (titleIndexGp3 !== -1) {
-			console.log(`${strTitle} 在群组3推送名单中，初始化群组推送`);
-			UseGroupNotify = 3;
-		}
-		if (titleIndexGp4 !== -1) {
-			console.log(`${strTitle} 在群组4推送名单中，初始化群组推送`);
-			UseGroupNotify = 4;
-		}
-		if (titleIndexGp5 !== -1) {
-			console.log(`${strTitle} 在群组5推送名单中，初始化群组推送`);
-			UseGroupNotify = 5;
-		}
-		if (titleIndexGp6 !== -1) {
-			console.log(`${strTitle} 在群组6推送名单中，初始化群组推送`);
-			UseGroupNotify = 6;
-		}
+
 		if (process.env.NOTIFY_CUSTOMNOTIFY) {
 			strCustom = process.env.NOTIFY_CUSTOMNOTIFY;
 		}
@@ -289,38 +270,19 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 			for (var Tempj in strCustomArr) {
 				strCustomTempArr = strCustomArr[Tempj].split("&");
 				if (strCustomTempArr.length > 1) {
-					if (strTitle == strCustomTempArr[0]) {
+					if (text == strCustomTempArr[0]) {
 						console.log("检测到自定义设定,开始执行配置...");
-						if (strCustomTempArr[1] == "组1") {
-							console.log("自定义设定强制使用组1配置通知...");
-							UseGroupNotify = 1;
-						}
 						if (strCustomTempArr[1] == "组2") {
 							console.log("自定义设定强制使用组2配置通知...");
-							UseGroupNotify = 2;
+							UseGroup2 = true;
+						} else {
+							console.log("自定义设定强制使用组1配置通知...");
+							UseGroup2 = false;
 						}
-						if (strCustomTempArr[1] == "组3") {
-							console.log("自定义设定强制使用组3配置通知...");
-							UseGroupNotify = 3;
-						}
-						if (strCustomTempArr[1] == "组4") {
-							console.log("自定义设定强制使用组4配置通知...");
-							UseGroupNotify = 4;
-						}
-						if (strCustomTempArr[1] == "组5") {
-							console.log("自定义设定强制使用组5配置通知...");
-							UseGroupNotify = 5;
-						}
-						if (strCustomTempArr[1] == "组6") {
-							console.log("自定义设定强制使用组6配置通知...");
-							UseGroupNotify = 6;
-						}
-
 						if (strCustomTempArr.length > 2) {
 							console.log("关闭所有通知变量...");
 							Use_serverNotify = false;
 							Use_pushPlusNotify = false;
-							Use_pushPlushxtripNotify = false;
 							Use_BarkNotify = false;
 							Use_tgBotNotify = false;
 							Use_ddBotNotify = false;
@@ -339,10 +301,6 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 								case "pushplus":
 									Use_pushPlusNotify = true;
 									console.log("自定义设定启用pushplus(推送加)进行通知...");
-									break;
-								case "pushplushxtrip":
-									Use_pushPlushxtripNotify = true;
-									console.log("自定义设定启用pushplus_hxtrip(推送加)进行通知...");
 									break;
 								case "Bark":
 									Use_BarkNotify = true;
@@ -378,16 +336,82 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 						}
 					}
 				}
-			}
 
+			}
 		}
 
-		//console.log("UseGroup2 :"+UseGroup2);
-		//console.log("UseGroup3 :"+UseGroup3);
+		if (UseGroup2) {
+			//==========================第二套环境变量赋值=========================
 
+			if (process.env.GOBOT_URL2 && Use_gobotNotify) {
+				GOBOT_URL = process.env.GOBOT_URL2;
+			}
+			if (process.env.GOBOT_TOKEN2 && Use_gobotNotify) {
+				GOBOT_TOKEN = process.env.GOBOT_TOKEN2;
+			}
+			if (process.env.GOBOT_QQ2 && Use_gobotNotify) {
+				GOBOT_QQ = process.env.GOBOT_QQ2;
+			}
 
-		switch (UseGroupNotify) {
-		case 1:
+			if (process.env.PUSH_KEY2 && Use_serverNotify) {
+				SCKEY = process.env.PUSH_KEY2;
+			}
+
+			if (process.env.BARK_PUSH2 && Use_BarkNotify) {
+				if (process.env.BARK_PUSH2.indexOf('https') > -1 || process.env.BARK_PUSH2.indexOf('http') > -1) {
+					//兼容BARK自建用户
+					BARK_PUSH = process.env.BARK_PUSH2;
+				} else {
+					BARK_PUSH = `https://api.day.app/${process.env.BARK_PUSH2}`;
+				}
+				if (process.env.BARK_SOUND2) {
+					BARK_SOUND = process.env.BARK_SOUND2;
+				}
+				if (process.env.BARK_GROUP2) {
+					BARK_GROUP = process.env.BARK_GROUP2;
+				}
+			}
+			if (process.env.TG_BOT_TOKEN2 && Use_tgBotNotify) {
+				TG_BOT_TOKEN = process.env.TG_BOT_TOKEN2;
+			}
+			if (process.env.TG_USER_ID2 && Use_tgBotNotify) {
+				TG_USER_ID = process.env.TG_USER_ID2;
+			}
+			if (process.env.TG_PROXY_AUTH2 && Use_tgBotNotify)
+				TG_PROXY_AUTH = process.env.TG_PROXY_AUTH2;
+			if (process.env.TG_PROXY_HOST2 && Use_tgBotNotify)
+				TG_PROXY_HOST = process.env.TG_PROXY_HOST2;
+			if (process.env.TG_PROXY_PORT2 && Use_tgBotNotify)
+				TG_PROXY_PORT = process.env.TG_PROXY_PORT2;
+			if (process.env.TG_API_HOST2 && Use_tgBotNotify)
+				TG_API_HOST = process.env.TG_API_HOST2;
+
+			if (process.env.DD_BOT_TOKEN2 && Use_ddBotNotify) {
+				DD_BOT_TOKEN = process.env.DD_BOT_TOKEN2;
+				if (process.env.DD_BOT_SECRET2) {
+					DD_BOT_SECRET = process.env.DD_BOT_SECRET2;
+				}
+			}
+
+			if (process.env.QYWX_KEY2 && Use_qywxBotNotify) {
+				QYWX_KEY = process.env.QYWX_KEY2;
+			}
+
+			if (process.env.QYWX_AM2 && Use_qywxamNotify) {
+				QYWX_AM = process.env.QYWX_AM2;
+			}
+
+			if (process.env.IGOT_PUSH_KEY2 && Use_iGotNotify) {
+				IGOT_PUSH_KEY = process.env.IGOT_PUSH_KEY2;
+			}
+
+			if (process.env.PUSH_PLUS_TOKEN2 && Use_pushPlusNotify) {
+				PUSH_PLUS_TOKEN = process.env.PUSH_PLUS_TOKEN2;
+			}
+			if (process.env.PUSH_PLUS_USER2 && Use_pushPlusNotify) {
+				PUSH_PLUS_USER = process.env.PUSH_PLUS_USER2;
+			}
+		} else {
 			if (process.env.GOBOT_URL && Use_gobotNotify) {
 				GOBOT_URL = process.env.GOBOT_URL;
 			}
@@ -461,423 +485,13 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 			if (process.env.PUSH_PLUS_USER && Use_pushPlusNotify) {
 				PUSH_PLUS_USER = process.env.PUSH_PLUS_USER;
 			}
-
-			if (process.env.PUSH_PLUS_TOKEN_hxtrip && Use_pushPlushxtripNotify) {
-				PUSH_PLUS_TOKEN_hxtrip = process.env.PUSH_PLUS_TOKEN_hxtrip;
-			}
-			if (process.env.PUSH_PLUS_USER_hxtrip && Use_pushPlushxtripNotify) {
-				PUSH_PLUS_USER_hxtrip = process.env.PUSH_PLUS_USER_hxtrip;
-			}
-			break;
-
-		case 2:
-			//==========================第二套环境变量赋值=========================
-
-			if (process.env.GOBOT_URL2 && Use_gobotNotify) {
-				GOBOT_URL = process.env.GOBOT_URL2;
-			}
-			if (process.env.GOBOT_TOKEN2 && Use_gobotNotify) {
-				GOBOT_TOKEN = process.env.GOBOT_TOKEN2;
-			}
-			if (process.env.GOBOT_QQ2 && Use_gobotNotify) {
-				GOBOT_QQ = process.env.GOBOT_QQ2;
-			}
-
-			if (process.env.PUSH_KEY2 && Use_serverNotify) {
-				SCKEY = process.env.PUSH_KEY2;
-			}
-
-			if (process.env.BARK_PUSH2 && Use_BarkNotify) {
-				if (process.env.BARK_PUSH2.indexOf('https') > -1 || process.env.BARK_PUSH2.indexOf('http') > -1) {
-					//兼容BARK自建用户
-					BARK_PUSH = process.env.BARK_PUSH2;
-				} else {
-					BARK_PUSH = `https://api.day.app/${process.env.BARK_PUSH2}`;
-				}
-				if (process.env.BARK_SOUND2) {
-					BARK_SOUND = process.env.BARK_SOUND2;
-				}
-				if (process.env.BARK_GROUP2) {
-					BARK_GROUP = process.env.BARK_GROUP2;
-				}
-			}
-			if (process.env.TG_BOT_TOKEN2 && Use_tgBotNotify) {
-				TG_BOT_TOKEN = process.env.TG_BOT_TOKEN2;
-			}
-			if (process.env.TG_USER_ID2 && Use_tgBotNotify) {
-				TG_USER_ID = process.env.TG_USER_ID2;
-			}
-			if (process.env.TG_PROXY_AUTH2 && Use_tgBotNotify)
-				TG_PROXY_AUTH = process.env.TG_PROXY_AUTH2;
-			if (process.env.TG_PROXY_HOST2 && Use_tgBotNotify)
-				TG_PROXY_HOST = process.env.TG_PROXY_HOST2;
-			if (process.env.TG_PROXY_PORT2 && Use_tgBotNotify)
-				TG_PROXY_PORT = process.env.TG_PROXY_PORT2;
-			if (process.env.TG_API_HOST2 && Use_tgBotNotify)
-				TG_API_HOST = process.env.TG_API_HOST2;
-
-			if (process.env.DD_BOT_TOKEN2 && Use_ddBotNotify) {
-				DD_BOT_TOKEN = process.env.DD_BOT_TOKEN2;
-				if (process.env.DD_BOT_SECRET2) {
-					DD_BOT_SECRET = process.env.DD_BOT_SECRET2;
-				}
-			}
-
-			if (process.env.QYWX_KEY2 && Use_qywxBotNotify) {
-				QYWX_KEY = process.env.QYWX_KEY2;
-			}
-
-			if (process.env.QYWX_AM2 && Use_qywxamNotify) {
-				QYWX_AM = process.env.QYWX_AM2;
-			}
-
-			if (process.env.IGOT_PUSH_KEY2 && Use_iGotNotify) {
-				IGOT_PUSH_KEY = process.env.IGOT_PUSH_KEY2;
-			}
-
-			if (process.env.PUSH_PLUS_TOKEN2 && Use_pushPlusNotify) {
-				PUSH_PLUS_TOKEN = process.env.PUSH_PLUS_TOKEN2;
-			}
-			if (process.env.PUSH_PLUS_USER2 && Use_pushPlusNotify) {
-				PUSH_PLUS_USER = process.env.PUSH_PLUS_USER2;
-			}
-
-			if (process.env.PUSH_PLUS_TOKEN_hxtrip2 && Use_pushPlushxtripNotify) {
-				PUSH_PLUS_TOKEN_hxtrip = process.env.PUSH_PLUS_TOKEN_hxtrip2;
-			}
-			if (process.env.PUSH_PLUS_USER_hxtrip2 && Use_pushPlushxtripNotify) {
-				PUSH_PLUS_USER_hxtrip = process.env.PUSH_PLUS_USER_hxtrip2;
-			}
-			break;
-
-		case 3:
-			//==========================第三套环境变量赋值=========================
-
-			if (process.env.GOBOT_URL3 && Use_gobotNotify) {
-				GOBOT_URL = process.env.GOBOT_URL3;
-			}
-			if (process.env.GOBOT_TOKEN3 && Use_gobotNotify) {
-				GOBOT_TOKEN = process.env.GOBOT_TOKEN3;
-			}
-			if (process.env.GOBOT_QQ3 && Use_gobotNotify) {
-				GOBOT_QQ = process.env.GOBOT_QQ3;
-			}
-
-			if (process.env.PUSH_KEY3 && Use_serverNotify) {
-				SCKEY = process.env.PUSH_KEY3;
-			}
-
-			if (process.env.BARK_PUSH3 && Use_BarkNotify) {
-				if (process.env.BARK_PUSH3.indexOf('https') > -1 || process.env.BARK_PUSH3.indexOf('http') > -1) {
-					//兼容BARK自建用户
-					BARK_PUSH = process.env.BARK_PUSH3;
-				} else {
-					BARK_PUSH = `https://api.day.app/${process.env.BARK_PUSH3}`;
-				}
-				if (process.env.BARK_SOUND3) {
-					BARK_SOUND = process.env.BARK_SOUND3;
-				}
-				if (process.env.BARK_GROUP3) {
-					BARK_GROUP = process.env.BARK_GROUP3;
-				}
-			}
-			if (process.env.TG_BOT_TOKEN3 && Use_tgBotNotify) {
-				TG_BOT_TOKEN = process.env.TG_BOT_TOKEN3;
-			}
-			if (process.env.TG_USER_ID3 && Use_tgBotNotify) {
-				TG_USER_ID = process.env.TG_USER_ID3;
-			}
-			if (process.env.TG_PROXY_AUTH3 && Use_tgBotNotify)
-				TG_PROXY_AUTH = process.env.TG_PROXY_AUTH3;
-			if (process.env.TG_PROXY_HOST3 && Use_tgBotNotify)
-				TG_PROXY_HOST = process.env.TG_PROXY_HOST3;
-			if (process.env.TG_PROXY_PORT3 && Use_tgBotNotify)
-				TG_PROXY_PORT = process.env.TG_PROXY_PORT3;
-			if (process.env.TG_API_HOST3 && Use_tgBotNotify)
-				TG_API_HOST = process.env.TG_API_HOST3;
-
-			if (process.env.DD_BOT_TOKEN3 && Use_ddBotNotify) {
-				DD_BOT_TOKEN = process.env.DD_BOT_TOKEN3;
-				if (process.env.DD_BOT_SECRET3) {
-					DD_BOT_SECRET = process.env.DD_BOT_SECRET3;
-				}
-			}
-
-			if (process.env.QYWX_KEY3 && Use_qywxBotNotify) {
-				QYWX_KEY = process.env.QYWX_KEY3;
-			}
-
-			if (process.env.QYWX_AM3 && Use_qywxamNotify) {
-				QYWX_AM = process.env.QYWX_AM3;
-			}
-
-			if (process.env.IGOT_PUSH_KEY3 && Use_iGotNotify) {
-				IGOT_PUSH_KEY = process.env.IGOT_PUSH_KEY3;
-			}
-
-			if (process.env.PUSH_PLUS_TOKEN3 && Use_pushPlusNotify) {
-				PUSH_PLUS_TOKEN = process.env.PUSH_PLUS_TOKEN3;
-			}
-			if (process.env.PUSH_PLUS_USER3 && Use_pushPlusNotify) {
-				PUSH_PLUS_USER = process.env.PUSH_PLUS_USER3;
-			}
-
-			if (process.env.PUSH_PLUS_TOKEN_hxtrip3 && Use_pushPlushxtripNotify) {
-				PUSH_PLUS_TOKEN_hxtrip = process.env.PUSH_PLUS_TOKEN_hxtrip3;
-			}
-			if (process.env.PUSH_PLUS_USER_hxtrip3 && Use_pushPlushxtripNotify) {
-				PUSH_PLUS_USER_hxtrip = process.env.PUSH_PLUS_USER_hxtrip3;
-			}
-			break;
-
-		case 4:
-			//==========================第四套环境变量赋值=========================
-
-			if (process.env.GOBOT_URL4 && Use_gobotNotify) {
-				GOBOT_URL = process.env.GOBOT_URL4;
-			}
-			if (process.env.GOBOT_TOKEN4 && Use_gobotNotify) {
-				GOBOT_TOKEN = process.env.GOBOT_TOKEN4;
-			}
-			if (process.env.GOBOT_QQ4 && Use_gobotNotify) {
-				GOBOT_QQ = process.env.GOBOT_QQ4;
-			}
-
-			if (process.env.PUSH_KEY4 && Use_serverNotify) {
-				SCKEY = process.env.PUSH_KEY4;
-			}
-
-			if (process.env.BARK_PUSH4 && Use_BarkNotify) {
-				if (process.env.BARK_PUSH4.indexOf('https') > -1 || process.env.BARK_PUSH4.indexOf('http') > -1) {
-					//兼容BARK自建用户
-					BARK_PUSH = process.env.BARK_PUSH4;
-				} else {
-					BARK_PUSH = `https://api.day.app/${process.env.BARK_PUSH4}`;
-				}
-				if (process.env.BARK_SOUND4) {
-					BARK_SOUND = process.env.BARK_SOUND4;
-				}
-				if (process.env.BARK_GROUP4) {
-					BARK_GROUP = process.env.BARK_GROUP4;
-				}
-			}
-			if (process.env.TG_BOT_TOKEN4 && Use_tgBotNotify) {
-				TG_BOT_TOKEN = process.env.TG_BOT_TOKEN4;
-			}
-			if (process.env.TG_USER_ID4 && Use_tgBotNotify) {
-				TG_USER_ID = process.env.TG_USER_ID4;
-			}
-			if (process.env.TG_PROXY_AUTH4 && Use_tgBotNotify)
-				TG_PROXY_AUTH = process.env.TG_PROXY_AUTH4;
-			if (process.env.TG_PROXY_HOST4 && Use_tgBotNotify)
-				TG_PROXY_HOST = process.env.TG_PROXY_HOST4;
-			if (process.env.TG_PROXY_PORT4 && Use_tgBotNotify)
-				TG_PROXY_PORT = process.env.TG_PROXY_PORT4;
-			if (process.env.TG_API_HOST4 && Use_tgBotNotify)
-				TG_API_HOST = process.env.TG_API_HOST4;
-
-			if (process.env.DD_BOT_TOKEN4 && Use_ddBotNotify) {
-				DD_BOT_TOKEN = process.env.DD_BOT_TOKEN4;
-				if (process.env.DD_BOT_SECRET4) {
-					DD_BOT_SECRET = process.env.DD_BOT_SECRET4;
-				}
-			}
-
-			if (process.env.QYWX_KEY4 && Use_qywxBotNotify) {
-				QYWX_KEY = process.env.QYWX_KEY4;
-			}
-
-			if (process.env.QYWX_AM4 && Use_qywxamNotify) {
-				QYWX_AM = process.env.QYWX_AM4;
-			}
-
-			if (process.env.IGOT_PUSH_KEY4 && Use_iGotNotify) {
-				IGOT_PUSH_KEY = process.env.IGOT_PUSH_KEY4;
-			}
-
-			if (process.env.PUSH_PLUS_TOKEN4 && Use_pushPlusNotify) {
-				PUSH_PLUS_TOKEN = process.env.PUSH_PLUS_TOKEN4;
-			}
-			if (process.env.PUSH_PLUS_USER4 && Use_pushPlusNotify) {
-				PUSH_PLUS_USER = process.env.PUSH_PLUS_USER4;
-			}
-
-			if (process.env.PUSH_PLUS_TOKEN_hxtrip4 && Use_pushPlushxtripNotify) {
-				PUSH_PLUS_TOKEN_hxtrip = process.env.PUSH_PLUS_TOKEN_hxtrip4;
-			}
-			if (process.env.PUSH_PLUS_USER_hxtrip4 && Use_pushPlushxtripNotify) {
-				PUSH_PLUS_USER_hxtrip = process.env.PUSH_PLUS_USER_hxtrip4;
-			}
-
-			break;
-
-		case 5:
-			//==========================第五套环境变量赋值=========================
-
-			if (process.env.GOBOT_URL5 && Use_gobotNotify) {
-				GOBOT_URL = process.env.GOBOT_URL5;
-			}
-			if (process.env.GOBOT_TOKEN5 && Use_gobotNotify) {
-				GOBOT_TOKEN = process.env.GOBOT_TOKEN5;
-			}
-			if (process.env.GOBOT_QQ5 && Use_gobotNotify) {
-				GOBOT_QQ = process.env.GOBOT_QQ5;
-			}
-
-			if (process.env.PUSH_KEY5 && Use_serverNotify) {
-				SCKEY = process.env.PUSH_KEY5;
-			}
-
-			if (process.env.BARK_PUSH5 && Use_BarkNotify) {
-				if (process.env.BARK_PUSH5.indexOf('https') > -1 || process.env.BARK_PUSH5.indexOf('http') > -1) {
-					//兼容BARK自建用户
-					BARK_PUSH = process.env.BARK_PUSH5;
-				} else {
-					BARK_PUSH = `https://api.day.app/${process.env.BARK_PUSH5}`;
-				}
-				if (process.env.BARK_SOUND5) {
-					BARK_SOUND = process.env.BARK_SOUND5;
-				}
-				if (process.env.BARK_GROUP5) {
-					BARK_GROUP = process.env.BARK_GROUP5;
-				}
-			}
-			if (process.env.TG_BOT_TOKEN5 && Use_tgBotNotify) {
-				TG_BOT_TOKEN = process.env.TG_BOT_TOKEN5;
-			}
-			if (process.env.TG_USER_ID5 && Use_tgBotNotify) {
-				TG_USER_ID = process.env.TG_USER_ID5;
-			}
-			if (process.env.TG_PROXY_AUTH5 && Use_tgBotNotify)
-				TG_PROXY_AUTH = process.env.TG_PROXY_AUTH5;
-			if (process.env.TG_PROXY_HOST5 && Use_tgBotNotify)
-				TG_PROXY_HOST = process.env.TG_PROXY_HOST5;
-			if (process.env.TG_PROXY_PORT5 && Use_tgBotNotify)
-				TG_PROXY_PORT = process.env.TG_PROXY_PORT5;
-			if (process.env.TG_API_HOST5 && Use_tgBotNotify)
-				TG_API_HOST = process.env.TG_API_HOST5;
-
-			if (process.env.DD_BOT_TOKEN5 && Use_ddBotNotify) {
-				DD_BOT_TOKEN = process.env.DD_BOT_TOKEN5;
-				if (process.env.DD_BOT_SECRET5) {
-					DD_BOT_SECRET = process.env.DD_BOT_SECRET5;
-				}
-			}
-
-			if (process.env.QYWX_KEY5 && Use_qywxBotNotify) {
-				QYWX_KEY = process.env.QYWX_KEY5;
-			}
-
-			if (process.env.QYWX_AM5 && Use_qywxamNotify) {
-				QYWX_AM = process.env.QYWX_AM5;
-			}
-
-			if (process.env.IGOT_PUSH_KEY5 && Use_iGotNotify) {
-				IGOT_PUSH_KEY = process.env.IGOT_PUSH_KEY5;
-			}
-
-			if (process.env.PUSH_PLUS_TOKEN5 && Use_pushPlusNotify) {
-				PUSH_PLUS_TOKEN = process.env.PUSH_PLUS_TOKEN5;
-			}
-			if (process.env.PUSH_PLUS_USER5 && Use_pushPlusNotify) {
-				PUSH_PLUS_USER = process.env.PUSH_PLUS_USER5;
-			}
-
-			if (process.env.PUSH_PLUS_TOKEN_hxtrip5 && Use_pushPlushxtripNotify) {
-				PUSH_PLUS_TOKEN_hxtrip = process.env.PUSH_PLUS_TOKEN_hxtrip5;
-			}
-			if (process.env.PUSH_PLUS_USER_hxtrip5 && Use_pushPlushxtripNotify) {
-				PUSH_PLUS_USER_hxtrip = process.env.PUSH_PLUS_USER_hxtrip5;
-			}
-			break;
-
-		case 6:
-			//==========================第六套环境变量赋值=========================
-
-			if (process.env.GOBOT_URL6 && Use_gobotNotify) {
-				GOBOT_URL = process.env.GOBOT_URL6;
-			}
-			if (process.env.GOBOT_TOKEN6 && Use_gobotNotify) {
-				GOBOT_TOKEN = process.env.GOBOT_TOKEN6;
-			}
-			if (process.env.GOBOT_QQ6 && Use_gobotNotify) {
-				GOBOT_QQ = process.env.GOBOT_QQ6;
-			}
-
-			if (process.env.PUSH_KEY6 && Use_serverNotify) {
-				SCKEY = process.env.PUSH_KEY6;
-			}
-
-			if (process.env.BARK_PUSH6 && Use_BarkNotify) {
-				if (process.env.BARK_PUSH6.indexOf('https') > -1 || process.env.BARK_PUSH6.indexOf('http') > -1) {
-					//兼容BARK自建用户
-					BARK_PUSH = process.env.BARK_PUSH6;
-				} else {
-					BARK_PUSH = `https://api.day.app/${process.env.BARK_PUSH6}`;
-				}
-				if (process.env.BARK_SOUND6) {
-					BARK_SOUND = process.env.BARK_SOUND6;
-				}
-				if (process.env.BARK_GROUP6) {
-					BARK_GROUP = process.env.BARK_GROUP6;
-				}
-			}
-			if (process.env.TG_BOT_TOKEN6 && Use_tgBotNotify) {
-				TG_BOT_TOKEN = process.env.TG_BOT_TOKEN6;
-			}
-			if (process.env.TG_USER_ID6 && Use_tgBotNotify) {
-				TG_USER_ID = process.env.TG_USER_ID6;
-			}
-			if (process.env.TG_PROXY_AUTH6 && Use_tgBotNotify)
-				TG_PROXY_AUTH = process.env.TG_PROXY_AUTH6;
-			if (process.env.TG_PROXY_HOST6 && Use_tgBotNotify)
-				TG_PROXY_HOST = process.env.TG_PROXY_HOST6;
-			if (process.env.TG_PROXY_PORT6 && Use_tgBotNotify)
-				TG_PROXY_PORT = process.env.TG_PROXY_PORT6;
-			if (process.env.TG_API_HOST6 && Use_tgBotNotify)
-				TG_API_HOST = process.env.TG_API_HOST6;
-
-			if (process.env.DD_BOT_TOKEN6 && Use_ddBotNotify) {
-				DD_BOT_TOKEN = process.env.DD_BOT_TOKEN6;
-				if (process.env.DD_BOT_SECRET6) {
-					DD_BOT_SECRET = process.env.DD_BOT_SECRET6;
-				}
-			}
-
-			if (process.env.QYWX_KEY6 && Use_qywxBotNotify) {
-				QYWX_KEY = process.env.QYWX_KEY6;
-			}
-
-			if (process.env.QYWX_AM6 && Use_qywxamNotify) {
-				QYWX_AM = process.env.QYWX_AM6;
-			}
-
-			if (process.env.IGOT_PUSH_KEY6 && Use_iGotNotify) {
-				IGOT_PUSH_KEY = process.env.IGOT_PUSH_KEY6;
-			}
-
-			if (process.env.PUSH_PLUS_TOKEN6 && Use_pushPlusNotify) {
-				PUSH_PLUS_TOKEN = process.env.PUSH_PLUS_TOKEN6;
-			}
-			if (process.env.PUSH_PLUS_USER6 && Use_pushPlusNotify) {
-				PUSH_PLUS_USER = process.env.PUSH_PLUS_USER6;
-			}
-
-			if (process.env.PUSH_PLUS_TOKEN_hxtrip6 && Use_pushPlushxtripNotify) {
-				PUSH_PLUS_TOKEN_hxtrip = process.env.PUSH_PLUS_TOKEN_hxtrip6;
-			}
-			if (process.env.PUSH_PLUS_USER_hxtrip6 && Use_pushPlushxtripNotify) {
-				PUSH_PLUS_USER_hxtrip = process.env.PUSH_PLUS_USER_hxtrip6;
-			}
-			break;
 		}
-
 		//检查是否在不使用Remark进行名称替换的名单
-		const notifySkipRemarkList = process.env.NOTIFY_SKIP_NAMETYPELIST ? process.env.NOTIFY_SKIP_NAMETYPELIST.split('&') : [];
-		const titleIndex3 = notifySkipRemarkList.findIndex((item) => item === strTitle);
+		const notifySkipRemarkList = process.env.NOTIFY_SKIP_REMARK_LIST ? process.env.NOTIFY_SKIP_REMARK_LIST.split('&') : [];
+		const titleIndex3 = notifySkipRemarkList.findIndex((item) => item === text);
 
 		if (text == "京东到家果园互助码:") {
-			ShowRemarkType = "1";
+			ShowRemarkType = "3";
 			if (desp) {
 				var arrTemp = desp.split(",");
 				var allCode = "";
@@ -894,7 +508,7 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 			}
 		}
 
-		if (ShowRemarkType != "1" && titleIndex3 == -1) {
+		if (ShowRemarkType != "3" && titleIndex3 == -1) {
 			console.log("正在处理账号Remark.....");
 			//开始读取青龙变量列表
 			const envs = await getEnvs();
@@ -920,10 +534,8 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 							}
 							if (!$.FoundPin) {
 								//缓存文件中有没有这个账号，调用京东接口获取别名,并更新缓存文件
-								console.log($.UserName+"好像是新账号，尝试获取别名.....");
 								await GetnickName();
 								if (!$.nickName) {
-									console.log("别名获取失败，尝试调用另一个接口获取别名.....");
 									await GetnickName2();
 								}
 								if ($.nickName) {
@@ -935,8 +547,6 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 									TempCK.push(tempAddCK);
 									//标识，需要更新缓存文件
 									boolneedUpdate = true;
-								} else{
-									console.log($.UserName+"别名获取失败.....");
 								}
 							}
 						}
@@ -949,7 +559,7 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 						if (ShowRemarkType == "2") {
 							$.Remark = $.nickName + "(" + $.Remark + ")";
 						}
-						if (ShowRemarkType == "3") {
+						if (ShowRemarkType == "4") {
 							$.Remark = $.UserName + "(" + $.Remark + ")";
 						}
 						try {
@@ -993,46 +603,10 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 	else
 		desp += author + "\n通知时间: " + GetDateTime(new Date());
 
-	await serverNotify(text, desp); //微信server酱
-
-	if (PUSH_PLUS_TOKEN_hxtrip) {
-		console.log("hxtrip TOKEN :" + PUSH_PLUS_TOKEN_hxtrip);
-	}
-	if (PUSH_PLUS_USER_hxtrip) {
-		console.log("hxtrip USER :" + PUSH_PLUS_USER_hxtrip);
-	}
-	PushErrorTime = 0;
-	await pushPlusNotifyhxtrip(text, desp); //pushplushxtrip(推送加)
-	if (PushErrorTime > 0) {
-		console.log("等待1分钟后重试.....");
-		await $.wait(60000 );
-		await pushPlusNotifyhxtrip(text, desp); 
-	}
-	if (PushErrorTime > 0) {
-		console.log("等待1分钟后重试.....");
-		await $.wait(60000);
-		await pushPlusNotifyhxtrip(text, desp); 
-	}
-	
-	if (PUSH_PLUS_TOKEN) {
-		console.log("PUSH_PLUS TOKEN :" + PUSH_PLUS_TOKEN);
-	}
-	if (PUSH_PLUS_USER) {
-		console.log("PUSH_PLUS USER :" + PUSH_PLUS_USER);
-	}
-	PushErrorTime = 0;
-	await pushPlusNotify(text, desp); //pushplus(推送加)
-	if (PushErrorTime > 0) {
-		console.log("等待1分钟后重试.....");
-		await $.wait(60000);
-		await pushPlusNotify(text, desp); //pushplus(推送加)
-	}
-	if (PushErrorTime > 0) {
-		console.log("等待1分钟后重试.....");
-		await $.wait(60000);
-		await pushPlusNotify(text, desp); //pushplus(推送加)
-	}
-	
+	await Promise.all([
+			serverNotify(text, desp), //微信server酱
+			pushPlusNotify(text, desp), //pushplus(推送加)
+		]);
 	//由于上述两种微信通知需点击进去才能查看到详情，故text(标题内容)携带了账号序号以及昵称信息，方便不点击也可知道是哪个京东哪个活动
 	text = text.match(/.*?(?=\s?-)/g) ? text.match(/.*?(?=\s?-)/g)[0] : text;
 	await Promise.all([
@@ -1053,7 +627,7 @@ function gobotNotify(text, desp, time = 2100) {
 				url: `${GOBOT_URL}?access_token=${GOBOT_TOKEN}&${GOBOT_QQ}`,
 				body: `message=${text}\n${desp}`,
 				headers: {
-					'Content-Type': 'application/json',
+					'Content-Type': 'application/x-www-form-urlencoded',
 				},
 				timeout,
 			};
@@ -1506,51 +1080,6 @@ function iGotNotify(text, desp, params = {}) {
 		}
 	});
 }
-function pushPlusNotifyhxtrip(text, desp) {
-	return new Promise((resolve) => {
-		if (PUSH_PLUS_TOKEN_hxtrip) {
-			desp = desp.replace(/[\n\r]/g, '<br>'); // 默认为html, 不支持plaintext
-			const body = {
-				token: `${PUSH_PLUS_TOKEN_hxtrip}`,
-				title: `${text}`,
-				content: `${desp}`,
-				topic: `${PUSH_PLUS_USER_hxtrip}`,
-			};
-			const options = {
-				url: `http://pushplus.hxtrip.com/send`,
-				body: JSON.stringify(body),
-				headers: {
-					'Content-Type': ' application/json',
-				},
-				timeout,
-			};
-			$.post(options, (err, resp, data) => {
-				try {
-					if (err) {
-						console.log(`hxtrip push+发送${PUSH_PLUS_USER_hxtrip ? '一对多' : '一对一'}通知消息失败！！\n`);
-						PushErrorTime += 1;
-						console.log(err);
-					} else {
-						if (data.indexOf("200") > -1) {
-							console.log(`hxtrip push+发送${PUSH_PLUS_USER_hxtrip ? '一对多' : '一对一'}通知消息完成。\n`);
-							PushErrorTime = 0;
-						} else {
-							console.log(`hxtrip push+发送${PUSH_PLUS_USER_hxtrip ? '一对多' : '一对一'}通知消息失败：${data}\n`);
-							PushErrorTime += 1;
-						}
-					}
-				} catch (e) {
-					$.logErr(e, resp);
-				}
-				finally {
-					resolve(data);
-				}
-			});
-		} else {
-			resolve();
-		}
-	});
-}
 
 function pushPlusNotify(text, desp) {
 	return new Promise((resolve) => {
@@ -1574,16 +1103,13 @@ function pushPlusNotify(text, desp) {
 				try {
 					if (err) {
 						console.log(`push+发送${PUSH_PLUS_USER ? '一对多' : '一对一'}通知消息失败！！\n`);
-						PushErrorTime += 1;
 						console.log(err);
 					} else {
 						data = JSON.parse(data);
 						if (data.code === 200) {
 							console.log(`push+发送${PUSH_PLUS_USER ? '一对多' : '一对一'}通知消息完成。\n`);
-							PushErrorTime = 0;
 						} else {
 							console.log(`push+发送${PUSH_PLUS_USER ? '一对多' : '一对一'}通知消息失败：${data.msg}\n`);
-							PushErrorTime += 1;
 						}
 					}
 				} catch (e) {
