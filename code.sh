@@ -14,7 +14,7 @@ env_name=(
   JDJOY_SHARECODES
   JXNC_SHARECODES
   BOOKSHOP_SHARECODES
-  JD_CASH_SHARECODES
+#   JD_CASH_SHARECODES
   JDSGMH_SHARECODES
   JDCFD_SHARECODES
   JDHEALTH_SHARECODES
@@ -29,7 +29,7 @@ var_name=(
   ForOtherJoy
   ForOtherJxnc
   ForOtherBookShop
-  ForOtherCash
+#   ForOtherCash
   ForOtherSgmh
   ForOtherCfd
   ForOtherHealth
@@ -45,7 +45,7 @@ name_js=(
   x-dr_bd_main_jd_crazy_joy
   x-dr_bd_main_jd_jxnc
   x-dr_bd_main_jd_bookshop
-  x-dr_bd_main_jd_cash
+#   x-dr_bd_main_jd_cash
   x-dr_bd_main_jd_sgmh
   x-dr_bd_main_jd_cfd
   x-dr_bd_main_jd_health
@@ -61,7 +61,7 @@ name_config=(
   Joy
   Jxnc
   BookShop
-  Cash
+#   Cash
   Sgmh
   Cfd
   Health
@@ -77,7 +77,7 @@ name_chinese=(
   crazyJoy任务
   京喜农场
   口袋书店
-  签到领现金
+#   签到领现金
   闪购盲盒
   京喜财富岛
   东东健康社区
