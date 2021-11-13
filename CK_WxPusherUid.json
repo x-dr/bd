@@ -82,10 +82,16 @@
         "pt_pin": "jd_67129af1f6758",
         "Uid": "UID_SbIHxynIwz5ANnEk0NVcI3gIfxwH"
     }, {
-        "pt_pin": "ptpin1",
-        "Uid": "UID_GXVNDhlRgmFPBQ5KpgY8VkSazcsW"
+        "pt_pin": "jd_6c1380bb75eb0",
+        "Uid": "UID_BV4xoddQMfnCoalT4CQvXThZaJR1"
     }, {
-        "pt_pin": "ptpin1",
+        "pt_pin": "jd_547de66c9ad53",
+        "Uid": "UID_vgzQPNZey87KF38WJUxLSkyntuLo"
+    }, {
+        "pt_pin": "jd_5dc96d47a1b30",
+        "Uid": "UID_mADBa8QAm4YJLqQvbtenVd7Ugijs"
+    }, {
+        "pt_pin": "ptpin12",
         "Uid": "UID_AAAAAAAAAAAA"
     }
 ]
