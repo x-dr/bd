@@ -149,7 +149,7 @@ let strCustomArr = [];
 let strCustomTempArr = [];
 let Notify_CKTask = "";
 let Notify_SkipText = [];
-async function sendNotify(text, desp, params = {}, author ='\n\ncookie更新/提交地址: \n\njd.ookk.me \n\n  \n\n本通知 By：' +process.env.AUTHOR +'\n\n') {
+async function sendNotify(text, desp, params = {}, author ='\n\ncookie更新/提交地址: \n\njd.ookk.me \n\n  本通知 By：' +process.env.AUTHOR +'\n\n') {
 	console.log(`开始发送通知...`);
 	try {
 		//Reset 变量
