@@ -119,7 +119,7 @@ const {
 	getEnvs
 } = require('./ql');
 const fs = require('fs');
-let strCKFile = './CKName_cache.json';
+let strCKFile = '/ql/scripts/CKName_cache.json';
 let Fileexists = fs.existsSync(strCKFile);
 let TempCK = [];
 if (Fileexists) {
@@ -149,7 +149,7 @@ let strCustomArr = [];
 let strCustomTempArr = [];
 let Notify_CKTask = "";
 let Notify_SkipText = [];
-async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：（容器1）\n\ncookie更新/提交地址: \n\njd.ookk.me \n\n') {
+async function sendNotify(text, desp, params = {}, author = process.env.AUTHOR) {
 	console.log(`开始发送通知...`);
 	try {
 		//Reset 变量
@@ -223,7 +223,7 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 			}
 		}
 
-		if (text.indexOf("cookie已失效") != -1 || desp.indexOf("重新登录获取") != -1 || text == "Ninja 运行通知") {
+		if (text.indexOf("cookie已失效") != -1 || desp.indexOf("重新登录获取") != -1 || text == "京东助手 运行通知") {
 
 			if (Notify_CKTask) {
 				console.log("触发CK脚本，开始执行....");
@@ -232,7 +232,7 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 					console.log(error, stdout, stderr)
 				});
 			}
-			if (Notify_NoCKFalse == "true" && text != "Ninja 运行通知") {
+			if (Notify_NoCKFalse == "true" && text != "京东助手 运行通知") {
 				return;
 			}
 		}
@@ -1178,7 +1178,7 @@ async function sendNotify(text, desp, params = {}, author = '\n\n本通知 By：
 		]);
 }
 
-async function sendNotifybyWxPucher(text, desp, PtPin, author = '\n\n本通知 小东') {
+async function sendNotifybyWxPucher(text, desp, PtPin, author = '\n\n本通知 By ccwav Mod') {
 
 	try {
 		var Uid = "";
