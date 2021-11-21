@@ -1,5 +1,5 @@
 /*
-cron "0 4,12,18 * * *" jd_speed_sign_Part1.js, tag:京东极速版任务1
+cron "0 7 * * *" jd_speed_sign_Part1.js, tag:京东极速版任务1
 */
  //详细说明参考 https://github.com/ccwav/QLScript2.
 const $ = new Env('京东极速版任务1');
@@ -29,7 +29,7 @@ const JD_API_HOST = 'https://api.m.jd.com/', actCode = 'visa-card-001';
     return;
   }
   
-  let lnTotalAcc=Math.ceil(cookiesArr.length/5);
+  let lnTotalAcc=Math.ceil(cookiesArr.length/3);
   console.log(`本次执行${lnTotalAcc}个账号\n`);
   for (let i = 0; i < lnTotalAcc; i++) {
     if (cookiesArr[i]) {
@@ -349,6 +349,7 @@ async function startItem(activeId, activeType) {
                 await $.wait(videoBrowsing * 1000)
 				await $.wait(3000);
                 await endItem(data.data.uuid, activeType, activeId, activeType === 3 ? videoBrowsing : "")
+				await $.wait(4000);
               } else {
                 console.log(`${$.taskName}任务已达上限`)
                 $.canStartNewItem = false

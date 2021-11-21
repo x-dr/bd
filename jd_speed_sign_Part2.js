@@ -1,5 +1,5 @@
 /*
-cron "0 4,12,18 * * *" jd_speed_sign_Part2.js, tag:京东极速版任务1
+cron "0 7 * * *" jd_speed_sign_Part2.js, tag:京东极速版任务1
 */
  //详细说明参考 https://github.com/ccwav/QLScript2.
 const $ = new Env('京东极速版任务2');
@@ -28,8 +28,8 @@ const JD_API_HOST = 'https://api.m.jd.com/', actCode = 'visa-card-001';
     $.msg($.name, '【提示】请先获取京东账号一cookie\n直接使用NobyDa的京东签到获取', 'https://bean.m.jd.com/bean/signIndex.action', {"open-url": "https://bean.m.jd.com/bean/signIndex.action"});
     return;
   }
-  let lnStartAcc=Math.ceil(cookiesArr.length/5);
-  let lnTotalAcc=Math.ceil(cookiesArr.length/5)*2;
+  let lnStartAcc=Math.ceil(cookiesArr.length/3);
+  let lnTotalAcc=Math.ceil(cookiesArr.length/3)*2;
   
   if (lnTotalAcc>cookiesArr.length){
 	  lnTotalAcc=cookiesArr.length;
@@ -355,6 +355,7 @@ async function startItem(activeId, activeType) {
                 await $.wait(videoBrowsing * 1000)
 				await $.wait(3000);
                 await endItem(data.data.uuid, activeType, activeId, activeType === 3 ? videoBrowsing : "")
+				await $.wait(4000);
               } else {
                 console.log(`${$.taskName}任务已达上限`)
                 $.canStartNewItem = false
