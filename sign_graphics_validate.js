@@ -3,6 +3,7 @@ const navigator = {
   plugins: { length: 0 },
   language: "zh-CN",
 };
+// 12.8
 function randomString(e) {
   e = e || 32;
   let t = "abcdef0123456789", a = t.length, n = "";
