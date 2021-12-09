@@ -1178,7 +1178,7 @@ async function sendNotify(text, desp, params = {}, author ='\n\ncookie更新/提
 		]);
 }
 
-async function sendNotifybyWxPucher(text, desp, PtPin, author = '\n\n本通知 By ccwav Mod') {
+async function sendNotifybyWxPucher(text, desp, PtPin, author = '\n\n本通知 小东') {
 
 	try {
 		var Uid = "";
