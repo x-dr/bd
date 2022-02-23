@@ -1,6 +1,6 @@
 /*
 京喜财富岛
-cron 1 * * * * jd_cfd.js
+cron "2 0-23/4 * * *" jd_cfd.js
 更新时间：2021-9-11
 活动入口：京喜APP-我的-京喜财富岛
 
@@ -13,7 +13,7 @@ cron 1 * * * * jd_cfd.js
 
 ================Loon==============
 [Script]
-cron "1 * * * *" script-path=https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_cfd.js,tag=京喜财富岛
+cron "2 0-23/6 * * *" script-path=https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_cfd.js,tag=京喜财富岛
 
 ===============Surge=================
 京喜财富岛 = type=cron,cronexp="1 * * * *",wake-system=1,timeout=3600,script-path=https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_cfd.js
