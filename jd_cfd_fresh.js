@@ -1,6 +1,6 @@
 /*
 京喜财富岛合成生鲜
-cron 45 5-15/5 * * * jd_cfd_fresh.js
+cron 45 10 * * * jd_cfd_fresh.js
 更新时间：2021-9-11
 活动入口：微信京喜-我的-京喜财富岛
 
@@ -9,17 +9,17 @@ cron 45 5-15/5 * * * jd_cfd_fresh.js
 ============Quantumultx===============
 [task_local]
 #京喜财富岛合成生鲜
-45 5-15/5 * * * https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_cfd_fresh.js, tag=京喜财富岛合成生鲜, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jxcfd.png, enabled=true
+45 10 * * * https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_cfd_fresh.js, tag=京喜财富岛合成生鲜, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jxcfd.png, enabled=true
 
 ================Loon==============
 [Script]
-cron "45 5-15/5 * * *" script-path=https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_cfd_fresh.js,tag=京喜财富岛合成生鲜
+cron "45 10 * * *" script-path=https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_cfd_fresh.js,tag=京喜财富岛合成生鲜
 
 ===============Surge=================
-京喜财富岛合成生鲜 = type=cron,cronexp="45 5-15/5 * * *",wake-system=1,timeout=3600,script-path=https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_cfd_fresh.js
+京喜财富岛合成生鲜 = type=cron,cronexp="45 10 * * *",wake-system=1,timeout=3600,script-path=https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_cfd_fresh.js
 
 ============小火箭=========
-京喜财富岛合成生鲜 = type=cron,script-path=https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_cfd_fresh.js, cronexpr="45 5-15/5 * * *", timeout=3600, enable=true
+京喜财富岛合成生鲜 = type=cron,script-path=https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_cfd_fresh.js, cronexpr="45 10 * * *", timeout=3600, enable=true
  */
 const $ = new Env("京喜财富岛合成生鲜");
 const JD_API_HOST = "https://m.jingxi.com/";
