@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
-
 ## 导入通用变量与函数
- dir_shell=/ql/shell
- 
+dir_shell=/ql/shell
 . $dir_shell/share.sh
-#11
 
 env_name=(
   FRUITSHARECODES
