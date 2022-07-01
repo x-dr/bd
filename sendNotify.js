@@ -1655,7 +1655,7 @@ function getRemark(strRemark) {
     }
 }
 
-async function sendNotifybyWxPucher(text, desp, PtPin, author = '\n\n本通知 By ccwav Mod', strsummary = "") {
+async function sendNotifybyWxPucher(text, desp, PtPin, author = '\n\n本通知 By 小东', strsummary = "") {
 
     try {
         var Uid = "";
